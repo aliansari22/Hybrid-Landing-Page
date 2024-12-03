@@ -145,21 +145,25 @@
 			if (!price) return displayError("Please enter the price.");
             // Calculate transportation cost
             let cbm = (length * width * height) / 1000000; // convert to cubic meters
-	if (weight > 1000) {
-        cbm = Math.ceil(cbm); // round up CBM when weight exceeds 1000 kg
-    } else {
-        cbm = 1.0; // fixed CBM of 1.0 for weight <= 1000 kg
-    }
-            let cost = 0;
+            
+			if (weight > 1000) {
+				cbm = Math.ceil(cbm); // round up CBM when weight exceeds 1000 kg
+				
+			} else {
+				cbm = 1.0; // fixed CBM of 1.0 for weight <= 1000 kg
+				
+			}
+
+			let cost = 0;
 
             if (method === 'sea') {
                 const seaRate = rates.sea[goodsType];
-                const seaCharge = Math.max(cbm, weight) * seaRate;
+                const seaCharge = Math.max(cbm, weight/1000) * seaRate;
                 cost = seaCharge + clearance + (fee * price);
             } else if (method === 'air') {
                 const airRate = rates.air[goodsType];
                 const volumetricWeight = (length * width * height) / 6000; // 1 cbm = 166.67 kg in air freight
-                const airCharge = Math.max(weight, volumetricWeight) * airRate;
+                const airCharge = Math.max(weight/1000, volumetricWeight) * airRate;
                 cost = airCharge + clearance + (fee * price);
             }
 
