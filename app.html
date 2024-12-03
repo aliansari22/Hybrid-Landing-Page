@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محاسبه هزینه حمل و نقل</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 800px;
+        }
+
+        .card {
+            background: #fff5f5;
+            border-radius: 15px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-danger {
+            color: #d9534f !important;
+        }
+
+        .border-danger {
+            border-color: #d9534f !important;
+        }
+
+        .result-card {
+            font-size: 1.25rem;
+            border: 2px solid #d9534f;
+            background-color: #f8f9fa;
+            padding: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body dir="rtl">
+    <div class="container my-5">
+        <div class="card p-4 shadow-lg border-0">
+            <h3 class="text-center text-danger mb-4">محاسبه هزینه حمل و نقل</h3>
+            <form id="cost-calculation-form">
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="length" class="form-label">طول (سانتی‌متر)</label>
+                        <input type="number" id="length" class="form-control border-danger" placeholder="طول را وارد کنید" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="width" class="form-label">عرض (سانتی‌متر)</label>
+                        <input type="number" id="width" class="form-control border-danger" placeholder="عرض را وارد کنید" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="height" class="form-label">ارتفاع (سانتی‌متر)</label>
+                        <input type="number" id="height" class="form-control border-danger" placeholder="ارتفاع را وارد کنید" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="weight" class="form-label">وزن (کیلوگرم)</label>
+                        <input type="number" id="weight" class="form-control border-danger" placeholder="وزن را وارد کنید" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="method" class="form-label">روش حمل و نقل</label>
+                        <select id="method" class="form-select border-danger" required>
+                            <option value="" disabled selected>انتخاب روش</option>
+                            <option value="sea">حمل دریایی</option>
+                            <option value="air">حمل هوایی</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="goodsType" class="form-label">نوع کالا</label>
+                        <select id="goodsType" class="form-select border-danger" required>
+                            <option value="" disabled selected>انتخاب نوع کالا</option>
+                            <option value="normal">کالای عادی (¥ 650)</option>
+                            <option value="copy">کالای کپی (¥ 950)</option>
+                            <option value="liquid">کالای مایع (¥ 1200)</option>
+                            <option value="battery">کالای باتری (¥ 1400)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                <div class="col-md-12 mb-3">
+                        <label for="price" class="form-label">قیمت (¥)</label>
+                        <input type="number" id="price" class="form-control border-danger" placeholder="قیمت را وارد کنید" required>
+                    </div>
+                </div>
+            <div id="result" class="result-card bg-light border-danger rounded mt-4">
+                <h5 class="text-success">هزینه حمل و نقل:</h5>
+                <h3 class="text-danger">لطفاً طول را وارد کنید.</h3>
+            </div>
+            <p></p>
+                 <div class="text-center">
+					<button type="reset" id="resetButton" class="btn btn-secondary">بازنشانی (Shift+N)</button>
+				</div>
+            </form>
+            
+        </div>
+    </div>
+
+    <script>
+        const rates = {
+            sea: {
+                normal: 650,
+                copy: 950,
+                liquid: 1200,
+                battery: 1400
+            },
+            air: {
+                normal: 650,
+                copy: 950,
+                liquid: 1200,
+                battery: 1400
+            }
+        };
+
+        const clearance = 150; 
+        const fee = 0.02;
+
+        const form = document.getElementById('cost-calculation-form');
+        const resultBox = document.getElementById('result');
+
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', validateAndCalculate);
+        });
+
+        function validateAndCalculate() {
+            const goodsType = document.getElementById('goodsType').value;
+            const length = document.getElementById('length').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const weight = document.getElementById('weight').value;
+            const method = document.getElementById('method').value;
+            const price = document.getElementById('price').value;
+
+            if (!length) return displayError("لطفاً طول را وارد کنید.");
+            if (!width) return displayError("لطفاً عرض را وارد کنید.");
+            if (!height) return displayError("لطفاً ارتفاع را وارد کنید.");
+            if (!weight) return displayError("لطفاً وزن را وارد کنید.");
+            if (!method) return displayError("لطفاً روش حمل و نقل را انتخاب کنید.");
+            if (!goodsType) return displayError("لطفاً نوع کالا را انتخاب کنید.");
+            if (!price) return displayError("لطفاً قیمت را وارد کنید.");
+
+            const cbm = (length * width * height) / 1000000;
+            let cost = 0;
+
+            if (method === 'sea') {
+                const seaRate = rates.sea[goodsType];
+                const seaCharge = Math.max(cbm, weight) * seaRate;
+                cost = seaCharge + clearance + (fee * price);
+            } else if (method === 'air') {
+                const airRate = rates.air[goodsType];
+                const volumetricWeight = cbm * 166.67;
+                const airCharge = Math.max(weight, volumetricWeight) * airRate;
+                cost = airCharge + clearance + (fee * price);
+            }
+
+            resultBox.innerHTML = `
+                <h5 class="text-success">هزینه حمل و نقل:</h5>
+                <h3 class="text-danger">¥ ${cost.toFixed(2)}</h3>
+            `;
+        }
+
+        function displayError(message) {
+            resultBox.innerHTML = `
+                <h5 class="text-success">هزینه حمل و نقل:</h5>
+                <h3 class="text-danger">${message}</h3>
+            `;
+        }
+
+        form.addEventListener('reset', () => {
+            resultBox.innerHTML = `
+                <h5 class="text-success">هزینه حمل و نقل:</h5>
+                <h3 class="text-danger">لطفاً طول را وارد کنید.</h3>
+			`;
+			const field = document.getElementById('length');
+            field.focus();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.shiftKey && event.key === 'N') {
+                event.preventDefault();
+                document.getElementById('resetButton').click();
+                const field = document.getElementById('length');
+                field.focus();
+            }
+        });
+    </script>
+</body>
+</html>
