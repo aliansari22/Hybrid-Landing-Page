@@ -144,7 +144,7 @@
             if (!goodsType) return displayError("Please select a goods type.");
 			if (!price) return displayError("Please enter the price.");
             // Calculate transportation cost
-            const cbm = (length * width * height) / 1000000; // convert to cubic meters
+            let cbm = (length * width * height) / 1000000; // convert to cubic meters
 	if (weight > 1000) {
         cbm = Math.ceil(cbm); // round up CBM when weight exceeds 1000 kg
     } else {
