@@ -147,7 +147,7 @@
             let cbm = (length * width * height) / 1000000; // convert to cubic meters
             
 			if (weight > 1000) {
-				cbm = Math.ceil(cbm); // round up CBM when weight exceeds 1000 kg
+				cbm = cbm*1.0; // round up CBM when weight exceeds 1000 kg
 				
 			} else {
 				cbm = 1.0; // fixed CBM of 1.0 for weight <= 1000 kg
