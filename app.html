@@ -150,7 +150,7 @@
                 cost = seaCharge + clearance + (fee * price);
             } else if (method === 'air') {
                 const airRate = rates.air[goodsType];
-                const volumetricWeight = cbm * 166.67;
+                const volumetricWeight = (length * width * height) / 6000; // 1 cbm = 166.67 kg in air freight
                 const airCharge = Math.max(weight, volumetricWeight) * airRate;
                 cost = airCharge + clearance + (fee * price);
             }
