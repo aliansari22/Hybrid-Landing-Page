@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transportation Cost Calculator</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    	<style>
-    
+	<style>
     * {
         margin: 0;
         padding: 0;
@@ -87,7 +86,7 @@
 
     .tab-content {
         display: none;
-        padding: 5px;
+        padding: 0px;
         background-color: #fff;
         animation: fade-in 0.3s ease-in-out;
     }
@@ -151,7 +150,6 @@
         box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
     }
 
-    
     @media (max-width: 768px) {
         .tab-container {
             margin: 20px auto;
@@ -433,7 +431,6 @@
         const boxesResult = document.getElementById('boxes-result');
         const containerResult = document.getElementById('container-result');
 
-        
         function displayError(resultElement, message) {
             resultElement.innerHTML = `
                 <h5 class="text-success">Transportation Cost:</h5>
@@ -441,7 +438,6 @@
             `;
         }
 
-        
         function focusFirstField() {
             const activeTab = document.querySelector('.tab-content.active form');
             if (activeTab) {
@@ -449,19 +445,48 @@
                 if (firstField) firstField.focus();
             }
         }
+		   
+        function displayError(resultElement, message) {
+            resultElement.innerHTML = `
+                <h5 class="text-success">Transportation Cost:</h5>
+                <h3 class="text-danger">${message}</h3>
+            `;
+        }
 
+        function displayFirstMessage(form) {
+            const resultElement = form.querySelector('.result-card');
+
+            if (form.id === 'generic-form') {
+                displayError(resultElement, "Please enter the length.");
+            } else if (form.id === 'boxes-form') {
+                displayError(resultElement, "Please enter the length.");
+            } else if (form.id === 'container-form') {
+                displayError(resultElement, "Please select a container type.");
+            }
+        }
+
+        
+        function setFirstFieldFocus(form) {
+            const firstField = form.querySelector('input, select');
+            if (firstField) {
+                firstField.focus();
+            }
+        }
+        
+        
         const resetButtons = document.querySelectorAll('button[type="reset"]');
         resetButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const parentForm = button.closest('form');
                 const resultCard = parentForm.querySelector('.result-card');
-                resultCard.innerHTML = `
-                    <h5 class="text-success">Transportation Cost:</h5>
-                    <h3 class="text-danger">Please start entering fields.</h3>`;
-                focusFirstField();
+                resultCard.innerHTML = '';
+                setFirstFieldFocus(parentForm); 
+                displayFirstMessage(parentForm);
+                
             });
         });
 
+        
         document.addEventListener('keydown', (event) => {
             if (event.shiftKey && event.key === 'N') {
                 const activeForm = document.querySelector('.tab-content.active form');
@@ -470,6 +495,7 @@
             }
         });
 
+        
         const tabs = document.querySelectorAll('.tab');
         tabs.forEach((tab, index) => {
             tab.addEventListener('click', () => {
@@ -480,9 +506,10 @@
         
         focusFirstField();
 
+        
         function calculateCost({ cbm, weight, method, goodsType, price }) {
             const rate = rates[method][goodsType];
-            const volumetricWeight = cbm * 166.67; // CBM to kg conversion
+            const volumetricWeight = cbm * 166.67; 
             const transportCharge =
                 method === "air"
                     ? Math.max(weight / 1000, volumetricWeight) * rate
@@ -498,6 +525,7 @@
             return totalCBM * rate + clearance + fee * price;
         }
 
+        
         genericForm.querySelectorAll('input, select').forEach(input => {
             input.addEventListener('input', () => {
                 const length = parseFloat(document.getElementById('generic-length').value) || 0;
@@ -523,6 +551,7 @@
             });
         });
 
+        
         boxesForm.querySelectorAll('input, select').forEach(input => {
             input.addEventListener('input', () => {
                 const length = parseFloat(document.getElementById('boxes-length').value) || 0;
@@ -552,6 +581,7 @@
             });
         });
 
+        
         containerForm.querySelectorAll('input, select').forEach(input => {
             input.addEventListener('input', () => {
                 const containerType = document.getElementById('container-type').value;
@@ -571,6 +601,7 @@
             });
         });
 
+        
         focusFirstField();
     });
 </script>
