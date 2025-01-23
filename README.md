@@ -48,14 +48,13 @@
 
 ## نصب و استفاده
 
-1. **کلون کردن مخزن**
+1. کلون کردن مخزن
    ```bash
-   git clone https://github.com/your-repo-name/hybrid-landing-page.git
-   cd hybrid-landing-page
+   git clone https://github.com/aliansari22/Hybrid-Landing-Page.git
+   cd Hybrid-Landing-Page
    ```
 
-2. **باز کردن فایل HTML**
-   فایل `index.html`
+2. فایل `index.html`
 ---
 
 ## قدردانی
